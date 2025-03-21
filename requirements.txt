@@ -8,3 +8,4 @@ ConfigSpace==1.2.1
 Optunity==1.1.1
 BOHB_HPO==0.5.2
 arff==0.9
+ucimlrepo==0.0.7

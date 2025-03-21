@@ -1,48 +1,31 @@
 import csv
 import os
+import subprocess
+import urllib.request
+import zipfile
 
 import numpy as np
 import scipy.io
-from sklearn import datasets, preprocessing
-from sklearn.cluster import KMeans
-from sklearn.metrics import silhouette_score, adjusted_rand_score
+from sklearn import datasets
+from ucimlrepo import fetch_ucirepo
 
 
 def fetch_datasets_dbcv():
+    ensure_datasets()
     datasets = {}
     base_directory = os.path.dirname(os.path.realpath(__file__))
-    with open(os.path.join(base_directory, "datasets", "iris.data")) as iris_file:
-        iris_labels = []
-        iris_points = []
-        for row in csv.reader(iris_file):
-            if len(row) == 0:
-                continue
-            iris_points.append([float(row[0]), float(row[1]), float(row[2]), float(row[3])])
-            if row[4] == "Iris-setosa":
-                iris_labels.append(0)
-            elif row[4] == "Iris-versicolor":
-                iris_labels.append(1)
-            else:
-                iris_labels.append(2)
-    datasets["iris"] = {"data": iris_points, "labels": iris_labels}
-    with open(os.path.join(base_directory, "datasets", "wine.data")) as wine_file:
-        wine_labels = []
-        wine_points = []
-        for row in csv.reader(wine_file):
-            if not row: continue
-            wine_labels.append(int(row[0]))
-            a = list(map(float, row[1:13]))
-            wine_points.append(a)
-    datasets["wine"] = {"data": wine_points, "labels": wine_labels}
-    with open(os.path.join(base_directory, "datasets", "glass.data")) as glass_file:
-        glass_labels = []
-        glass_points = []
-        for row in csv.reader(glass_file):
-            if not row: continue
-            glass_labels.append(int(row[10]))
-            a = list(map(float, row[2:9]))
-            glass_points.append(a)
-    datasets["glass"] = {"data": glass_points, "labels": glass_labels}
+    iris = fetch_ucirepo(id=53)
+    labels = iris.data.targets.apply(lambda col: col.astype('category').cat.codes).to_numpy().reshape(-1)
+    data = iris.data.features.to_numpy()
+    datasets["iris"] = {"data": data, "labels": labels}
+    wine = fetch_ucirepo(id=109)
+    x = wine.data.features.to_numpy()
+    y = wine.data.targets.to_numpy().reshape(-1)
+    datasets["wine"] = {"data": x, "labels": y}
+    ds = fetch_ucirepo(id=42)
+    x = ds.data.features.to_numpy()
+    y = ds.data.targets.to_numpy().reshape(-1)
+    datasets["glass"] = {"data": x, "labels": y}
     with open(os.path.join(base_directory, "datasets", "synthetic_control.data")) as kdd_file:
         kdd_labels = []
         kdd_points = []
@@ -276,98 +259,6 @@ def fetch_datasets_cd_uci():
     return datasets
 
 
-def fetch_datasets_cd_face():
-    folder = os.path.join(os.getcwd(), "Clustering-Datasets", "03. Face")
-    datasets = {}
-    for filename in os.listdir(folder):
-        if not filename.endswith(".mat"):
-            continue
-        dataset_name = filename.split('.')[0]
-        dataset = scipy.io.loadmat(os.path.join(folder, filename))
-        # dataset = arff.load(os.path.join(folder, filename))
-        # data = dataset["data"]
-        # labels= dataset["labels"]
-        continue
-        if data.dtype.type in [np.string_, np.str_]:
-            data = data.astype(int)
-        if np.isnan(data).any():
-            data = data[~np.isnan(data).any(axis=1)]
-        datasets[dataset_name] = {"data": dataset["data"], "labels": dataset["labels"]}
-    return datasets
-
-
-def fetch_datasets_cd_digits():
-    base_directory = os.path.dirname(os.path.realpath(__file__))
-    folder = os.path.join(base_directory, "Clustering-Datasets", "04. Handwritten Digits")
-    datasets = {}
-    for filename in os.listdir(folder):
-        if not filename.endswith(".mat"):
-            continue
-        dataset_name = filename.split('.')[0]
-        dataset = scipy.io.loadmat(os.path.join(folder, filename))
-        if dataset_name == "binaryalphadigs":
-            org_labels = [x[0] for x in dataset["classlabels"][0, :]]
-            le = preprocessing.LabelEncoder()
-            data_arrays = []
-            label_arrays = []
-            le.fit(org_labels)
-            labels = le.transform(org_labels)
-            for label in labels:
-                for i in range(39):
-                    data_arrays.append(dataset["dat"][label, i].flatten())
-                    label_array = label
-                    label_arrays.append(label_array)
-            data = np.vstack(data_arrays)
-            labels = np.hstack(label_arrays)
-        elif dataset_name == "mnist_all":
-            data_arrays = []
-            label_arrays = []
-            for i in range(10):
-                train = f"train{i}"
-                test = f"test{i}"
-                data_arrays.append(dataset[train])
-                data_arrays.append(dataset[test])
-                length = dataset[train].shape[0] + dataset[test].shape[0]
-                label_array = np.ones(length) * i
-                label_arrays.append(label_array)
-            data = np.vstack(data_arrays)
-            labels = np.hstack(label_arrays)
-        else:
-            continue
-        datasets[dataset_name] = {"data": data, "labels": labels}
-    return datasets
-
-
-def fetch_datasets_by_shape(spatial=False, names_only=False, function=silhouette_score, threshold=0.9):
-    datasets = fetch_datasets()
-    datasets_arbitrary = {key: {} for key in datasets}
-    datasets_spatial = {key: {} for key in datasets}
-    silhouettes = []
-    for dg_name, dg in datasets.items():
-        for ds_name, ds in dg.items():
-            try:
-                k = len(np.unique(ds["labels"]))
-                score = adjusted_rand_score(ds["labels"], KMeans(k, n_init="auto").fit(ds["data"]).labels_)
-                # if (score:=function(ds["data"],ds["labels"]))>threshold:
-                if score > threshold:
-                    datasets_spatial[dg_name][ds_name] = ds
-                else:
-                    datasets_arbitrary[dg_name][ds_name] = ds
-                silhouettes.append((score, ds_name))
-            except ValueError as err:
-                pass
-                # print(f"Omitted {ds_name} due to {err}")
-    silhouettes = sorted(silhouettes, reverse=True)
-    if not spatial:
-        ret = datasets_arbitrary
-    else:
-        ret = datasets_spatial
-    if names_only:
-        for dg_name, dg in ret.items():
-            ret[dg_name] = dg.keys()
-    return ret
-
-
 def dataset_names():
     names = {"dbcv": ["iris", "glass", "wine", "kdd", "cell237", "cell384"]}
     names["uci"] = list(fetch_datasets_cd_uci().keys())
@@ -397,13 +288,13 @@ def fetch_dataset(name: str):
 
 def clean(dataset, labels):
     dataset = np.array(dataset)
-    if type(labels[0]) == list:
+    if type(labels[0]) is list:
         true_labels = np.array([x for y in labels for x in y])
-    elif type(labels) == list:
+    elif type(labels) is list:
         true_labels = np.array(labels)
     else:
         true_labels = labels
-    if type(true_labels) == np.ndarray:
+    if type(true_labels) is np.ndarray:
         if len(true_labels.shape) == 2:
             if true_labels.shape[1] == 1:
                 true_labels = true_labels.reshape(true_labels.shape[0])
@@ -420,13 +311,13 @@ def clean(dataset, labels):
 
 
 def clean_labels(labels):
-    if type(labels[0]) == list:
+    if type(labels[0]) is list:
         true_labels = np.array([x for y in labels for x in y])
-    elif type(labels) == list:
+    elif type(labels) is list:
         true_labels = np.array(labels)
     else:
         true_labels = labels
-    if type(true_labels) == np.ndarray:
+    if type(true_labels) is np.ndarray:
         if len(true_labels.shape) == 2:
             if true_labels.shape[1] == 1:
                 true_labels = true_labels.reshape(true_labels.shape[0])
@@ -438,3 +329,25 @@ def clean_labels(labels):
     if len(valid_indizes) != len(true_labels):
         true_labels = np.array([true_labels[x] for x in valid_indizes])
     return true_labels
+
+
+def ensure_datasets():
+    if not os.path.isdir("datasets"):
+        os.makedirs("datasets")
+    files = {
+        "cell237.txt": "http://faculty.washington.edu/kayee/cluster/logcho_237_4class.txt",
+        "cell384.txt": "http://faculty.washington.edu/kayee/cluster/log_cellcycle_384_17.txt"
+    }
+    for file, url in files.items():
+        file_name = os.path.join("datasets", file)
+        if not os.path.exists(file_name):
+            urllib.request.urlretrieve(url, file_name)
+    if not os.path.exists(os.path.join("datasets", "synthetic_control.data")):
+        zip_path = os.path.join("datasets", "synthetic_control.zip")
+        if not os.path.exists(zip_path):
+            urllib.request.urlretrieve(
+                "https://archive.ics.uci.edu/static/public/139/synthetic+control+chart+time+series.zip", zip_path)
+        with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+            zip_ref.extract("synthetic_control.data", "datasets")
+    if not os.path.isdir("Clustering-Datasets"):
+        subprocess.run(["git", "clone", "https://github.com/milaan9/Clustering-Datasets", "Clustering-Datasets"])
