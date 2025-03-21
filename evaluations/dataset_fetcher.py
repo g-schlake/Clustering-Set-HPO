@@ -332,22 +332,24 @@ def clean_labels(labels):
 
 
 def ensure_datasets():
-    if not os.path.isdir("datasets"):
-        os.makedirs("datasets")
+    base_directory = os.path.dirname(os.path.realpath(__file__))
+    if not os.path.isdir(os.path.join(base_directory, "datasets")):
+        os.makedirs(os.path.join(base_directory, "datasets"))
     files = {
         "cell237.txt": "http://faculty.washington.edu/kayee/cluster/logcho_237_4class.txt",
         "cell384.txt": "http://faculty.washington.edu/kayee/cluster/log_cellcycle_384_17.txt"
     }
     for file, url in files.items():
-        file_name = os.path.join("datasets", file)
+        file_name = os.path.join(base_directory, "datasets", file)
         if not os.path.exists(file_name):
             urllib.request.urlretrieve(url, file_name)
-    if not os.path.exists(os.path.join("datasets", "synthetic_control.data")):
-        zip_path = os.path.join("datasets", "synthetic_control.zip")
+    if not os.path.exists(os.path.join(base_directory, "datasets", "synthetic_control.data")):
+        zip_path = os.path.join(base_directory, "datasets", "synthetic_control.zip")
         if not os.path.exists(zip_path):
             urllib.request.urlretrieve(
                 "https://archive.ics.uci.edu/static/public/139/synthetic+control+chart+time+series.zip", zip_path)
         with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-            zip_ref.extract("synthetic_control.data", "datasets")
-    if not os.path.isdir("Clustering-Datasets"):
-        subprocess.run(["git", "clone", "https://github.com/milaan9/Clustering-Datasets", "Clustering-Datasets"])
+            zip_ref.extract("synthetic_control.data", os.path.join(base_directory,"datasets"))
+    if not os.path.isdir(os.path.join(base_directory, "Clustering-Datasets")):
+        subprocess.run(["git", "clone", "https://github.com/milaan9/Clustering-Datasets",
+                        os.path.join(base_directory, "Clustering-Datasets")])
