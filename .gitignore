@@ -174,5 +174,5 @@ cython_debug/
 .pypirc
 
 *.xml
-.idea/*
-evaluations/datasets
+.idea/
+evaluations/datasets/
