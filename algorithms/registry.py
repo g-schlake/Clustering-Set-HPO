@@ -1,9 +1,6 @@
-import logging
-
 from algorithms import dbscan, kmeans, meanshift
-from evaluations.dataset_fetcher import fetch_datasets
 
-registered_algorithms = [dbscan.Dbscan, kmeans.Kmeans, meanshift.Meanshift]#
+registered_algorithms = [dbscan.Dbscan, kmeans.Kmeans, meanshift.Meanshift]  #
 
 
 def get_names_arbitrary_shape():

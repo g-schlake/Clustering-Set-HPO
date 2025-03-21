@@ -19,4 +19,4 @@ Additionally, the datasets [`cell237`](http://faculty.washington.edu/kayee/clust
 [`wine`](https://archive.ics.uci.edu/dataset/186/wine+quality) can be put in
 the `datasets` folder in `evaluations` to also use these datasets.
 We adopted some of these datasets slightly to make them compatible with our program. 
-The Repo was tested with Python 3.10.
+The Repo was tested with Python 3.10 and Linux. On Windows, SMAC does not work and is not used.

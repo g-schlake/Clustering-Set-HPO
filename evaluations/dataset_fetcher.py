@@ -9,8 +9,9 @@ from sklearn import datasets, preprocessing
 from sklearn.cluster import KMeans
 from sklearn.datasets import make_blobs
 from sklearn.metrics import silhouette_score, adjusted_rand_score
-from copy  import copy
+from copy import copy
 from tqdm import tqdm
+
 
 def fetch_datasets_dbcv():
     datasets = {}
@@ -388,15 +389,16 @@ def fetch_datasets():
 
 
 def fetch_datasets_real_syn():
-    return {"real": {**fetch_datasets_dbcv(), **fetch_datasets_cd_uci()}, "synthetic":fetch_datasets_cd_synthetic()}
+    return {"real": {**fetch_datasets_dbcv(), **fetch_datasets_cd_uci()}, "synthetic": fetch_datasets_cd_synthetic()}
 
 
-def fetch_dataset(name:str):
+def fetch_dataset(name: str):
     dss = fetch_datasets()
     for datasets in dss.values():
         if name in datasets:
             return datasets[name]
-    raise ValueError("No dataset with "+name)
+    raise ValueError("No dataset with " + name)
+
 
 def clean(dataset, labels):
     dataset = np.array(dataset)

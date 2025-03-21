@@ -1,6 +1,5 @@
 import numpy as np
 from sklearn.cluster import MeanShift
-from sklearn.cluster import estimate_bandwidth
 
 from algorithms import base_algorithm
 

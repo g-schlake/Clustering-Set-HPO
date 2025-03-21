@@ -31,7 +31,7 @@ class algorithm(abc.ABC):
                     kwargs[param] = limits[1]
             else:
                 eps = 1
-                if not param in self.integer_params:
+                if param not in self.integer_params:
                     eps = np.finfo(float).eps
                 if not limits[2]:
                     if kwargs[param] <= limits[0]:
@@ -42,7 +42,6 @@ class algorithm(abc.ABC):
         for param in self.integer_params:
             kwargs[param] = int(kwargs[param])
         return kwargs
-
 
     def constrained_distance_matrix(self, data, linked_samples, unlinked_samples, distance, inf_value='Max'):
         distance_matrix = sklearn.metrics.pairwise_distances(data, metric=distance, n_jobs=-1)

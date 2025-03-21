@@ -3,8 +3,6 @@ import sklearn.metrics.pairwise
 from sklearn.cluster import DBSCAN
 
 from algorithms import base_algorithm
-from measures.dbcv_measures import DBCV
-
 
 class Dbscan(base_algorithm.algorithm):
     def __init__(self):
