@@ -1,5 +1,3 @@
-import numpy as np
-
 from measures import base_measure
 from measures.auxiliaries.rebuild_dbcv import rebuild_dbcv
 
@@ -18,4 +16,3 @@ class DBCV(base_measure.BaseMeasure):
 
     def score_norm(self, data, labels):
         return self.score(data, labels)
-

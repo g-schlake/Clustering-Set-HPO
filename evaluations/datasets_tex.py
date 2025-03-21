@@ -3,7 +3,7 @@ import numpy as np
 from dataset_fetcher import fetch_datasets
 
 text = ""
-text_syn=""
+text_syn = ""
 if __name__ == '__main__':
     datasets = fetch_datasets()
     arb_names = ["2-cluster", "2sp2glob", "3-cluster", "2spiral", "3-spiral", "banana", "banana - Ori", "cluto-t4-8k",
@@ -23,10 +23,10 @@ if __name__ == '__main__':
                  "engytime", "elly-2d10c13s", "DS-577", "DS6", "elliptical_10_2", "sizes4", "sizes3", "sizes2", "S4",
                  "sizes1", "S3", "S2", "S1", "sizes5", "rings", "pathbased", "square2", "s-set1", "square1", "square5",
                  "square3", "square4", "spherical_5_2", "s-set2", "threenorm", "st900"]
-    results={}
+    results = {}
     i = 0
     for dg in datasets:
-        results[dg]={"n":[],"d":[],"p":[]}
+        results[dg] = {"n": [], "d": [], "p": []}
         for name, dataset in datasets[dg].items():
             """n, dim = dataset["data"].shape
             clusters = len(np.unique(dataset["labels"]))
@@ -46,11 +46,11 @@ if __name__ == '__main__':
             text += f" {name} & {dg} & {n} & {dim} & {clusters} & {outliers:.2f} & {arb} & {noi} & {ovl} \\\\\n"
             if "syn" in dg:
                 text_syn += f" {name} & {n} & {dim} & {clusters} & {outliers:.2f} & {arb} & {noi} & {ovl} "
-            if i%2==0:
-                text_syn+='&'
+            if i % 2 == 0:
+                text_syn += '&'
             else:
-                text_syn+="\\\\ \\hline\n"
+                text_syn += "\\\\ \\hline\n"
             i += 1
-    #text = text.replace('_', '\_')
-    #text = text.replace('syntetic', "syn")
+    # text = text.replace('_', '\_')
+    # text = text.replace('syntetic', "syn")
     print(text_syn)

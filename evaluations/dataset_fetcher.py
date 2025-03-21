@@ -1,16 +1,11 @@
 import csv
-import itertools
 import os
 
 import numpy as np
-import pandas as pd
 import scipy.io
 from sklearn import datasets, preprocessing
 from sklearn.cluster import KMeans
-from sklearn.datasets import make_blobs
 from sklearn.metrics import silhouette_score, adjusted_rand_score
-from copy import copy
-from tqdm import tqdm
 
 
 def fetch_datasets_dbcv():

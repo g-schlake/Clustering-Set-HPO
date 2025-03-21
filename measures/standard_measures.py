@@ -1,10 +1,6 @@
-import inspect
-from copy import deepcopy
-
 import numpy as np
-#from s_dbw import S_Dbw
-#from scipy.spatial import QhullError
-from sklearn.metrics import silhouette_score, calinski_harabasz_score, adjusted_mutual_info_score, silhouette_samples
+from sklearn.metrics import silhouette_score, calinski_harabasz_score, adjusted_mutual_info_score
+
 from evaluations.dataset_fetcher import clean_labels
 from measures import base_measure
 
@@ -14,11 +10,12 @@ class Silhouette_Coefficient(base_measure.BaseMeasure):
         super().__init__()
         self.name = "SWC"
         self.worst_value = -1
-        self.best_value =1
+        self.best_value = 1
         self.function = silhouette_score
         self.function_norm = silhouette_score
         self.kwargs = {"metric": "precomputed"}
         self.needs_quadratic = True
+
 
 class VRC(base_measure.BaseMeasure):
     def __init__(self):
@@ -62,7 +59,8 @@ class AMI(base_measure.BaseMeasure):
     def score_distance_function(self, data: np.ndarray, labels: np.ndarray, **kwargs) -> float:
         return self.score(data, labels)
 
-def ofami(labels_a: np.ndarray, labels_b : np.ndarray) -> float:
+
+def ofami(labels_a: np.ndarray, labels_b: np.ndarray) -> float:
     ground_truth = labels_b
     outlier_indxs = np.where(labels_a == -1)[0]
     new_labels = np.array(range(len(outlier_indxs))) + np.max(labels_a) + 1
@@ -72,4 +70,3 @@ def ofami(labels_a: np.ndarray, labels_b : np.ndarray) -> float:
     new_gt = np.array(range(len(outlier_indxs_gt))) + np.max(alt_gt) + 1
     alt_gt[outlier_indxs_gt] = new_gt
     return adjusted_mutual_info_score(labels_a, alt_gt)
-

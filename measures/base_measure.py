@@ -19,16 +19,16 @@ class BaseMeasure(abc.ABC):
         self.decimals = 3
         self.function_clusters = NotImplementedError
         self.normalization_params = None
-        self.function_norm= NotImplementedError
+        self.function_norm = NotImplementedError
 
     def plot_name(self):
         if self.less_is_better:
-            return self.name+"↓"
+            return self.name + "↓"
         else:
-            return self.name+"↑"
+            return self.name + "↑"
 
     @staticmethod
-    def clean_outliers(data: np.ndarray, labels: np.ndarray) -> np.ndarray:
+    def clean_outliers(data: np.ndarray, labels: np.ndarray):
         if labels.dtype == np.uint8:
             labels = labels.astype(np.int16)
         quadratic = data.shape[0] == data.shape[1]
@@ -74,20 +74,17 @@ class BaseMeasure(abc.ABC):
         kwargs_out = deepcopy(self.kwargs)
         for kw in kwargs:
             kwargs_out[kw] = kwargs[kw]
-        args =inspect.getfullargspec(self.function).args
+        args = inspect.getfullargspec(self.function).args
         if "X" in args:
             kwargs_out["X"] = data
         elif "dists" in args:
             kwargs_out["dists"] = data
         kwargs_out["labels"] = labels
-        # start=time.time()
-        # print(f"Start {self.name}")
         res = self.function(**kwargs_out)
-        # print(f"Finished {self.name} in {time.time()-start:.2f}")
         if not self.less_is_better:
             ret = res * share
         else:
-            ret = res *(1/share)
+            ret = res * (1 / share)
         ret = self.ensure_finite(ret)
         return ret
 
@@ -109,35 +106,30 @@ class BaseMeasure(abc.ABC):
         elif "dists" in args:
             kwargs_out["dists"] = data
         kwargs_out["labels"] = labels
-        # start=time.time()
-        # print(f"Start {self.name}")
         res = self.function_norm(**kwargs_out)
-        # print(f"Finished {self.name} in {time.time()-start:.2f}")
         if not self.less_is_better:
             ret = res * share
         else:
-            ret = res *(1/share)
+            ret = res * (1 / share)
         ret = self.ensure_finite(ret)
         return ret
 
-
-    def score_norm(self, data:np.ndarray, labels: np.ndarray, **kwargs) ->float:
-        if not type(self.function_norm)==type:
+    def score_norm(self, data: np.ndarray, labels: np.ndarray, **kwargs) -> float:
+        if not type(self.function_norm) == type:
             kwargs_out = deepcopy(self.kwargs)
             for kw in kwargs:
                 kwargs_out[kw] = kwargs[kw]
             res = self.score_norm_(data, labels, **kwargs_out)
         else:
             res = self.score(data, labels, **kwargs)
-            #print(f"Unnormal result for {self.name} is {res}")
+            # print(f"Unnormal result for {self.name} is {res}")
             if not (np.isinf(self.worst_value) or np.isinf(self.best_value)):
-                res = -1+( ((res-self.worst_value)*2)/(self.best_value-self.worst_value))
+                res = -1 + (((res - self.worst_value) * 2) / (self.best_value - self.worst_value))
             else:
-                res = np.tanh((res-self.normalization_params[0])/self.normalization_params[1])
-            if self.worst_value>self.best_value:
-                res*=-1
+                res = np.tanh((res - self.normalization_params[0]) / self.normalization_params[1])
+            if self.worst_value > self.best_value:
+                res *= -1
         return res
-
 
     def score_clusters(self, data: np.ndarray, labels: np.ndarray, **kwargs) -> dict:
         if not self.check_valid(labels):
@@ -149,14 +141,14 @@ class BaseMeasure(abc.ABC):
         kwargs_out = deepcopy(self.kwargs)
         for kw in kwargs:
             kwargs_out[kw] = kwargs[kw]
-        if "dim" in inspect.getfullargspec(self.function).args and data.shape[0]!=data.shape[1]:
+        if "dim" in inspect.getfullargspec(self.function).args and data.shape[0] != data.shape[1]:
             kwargs_out["dim"] = data.shape[1]
         if self.function_clusters == NotImplementedError:
             raise NotImplementedError(f"No score per cluster implemented for {self.name}")
         if self.function_clusters == ValueError:
             raise ValueError(f"No score per cluster possible for {self.name}")
         ret = self.function_clusters(dists, labels, **kwargs_out)
-        for res in  ret:
+        for res in ret:
             ret[res] = self.ensure_finite(ret[res])
         return ret
 
@@ -182,7 +174,7 @@ class BaseMeasure(abc.ABC):
 
     def ensure_finite(self, score):
         score = round(score, self.decimals)
-        if type(score) == int:
+        if type(score) is int:
             ii64 = np.iinfo(np.int32)
         else:
             ii64 = np.finfo(np.float32)
@@ -200,7 +192,6 @@ class BaseMeasure(abc.ABC):
     def function(self, data: np.ndarray, labels: np.ndarray, **kwargs) -> float:
         raise NotImplementedError
 
-
     def score_distance_function(self, data: np.ndarray, labels: np.ndarray, **kwargs) -> float:
         if not self.check_valid(labels):
             return self.worst_value
@@ -212,7 +203,7 @@ class BaseMeasure(abc.ABC):
             kwargs_out = deepcopy(self.kwargs)
             for kw in kwargs:
                 kwargs_out[kw] = kwargs[kw]
-            args =inspect.getfullargspec(self.function).args
+            args = inspect.getfullargspec(self.function).args
             if "X" in args:
                 kwargs_out["X"] = dists
             elif "dists" in args:
@@ -225,7 +216,7 @@ class BaseMeasure(abc.ABC):
             if not self.less_is_better:
                 ret = res * share
             else:
-                ret = res *(1/share)
+                ret = res * (1 / share)
             ret = self.ensure_finite(ret)
             return ret
         else:
@@ -233,15 +224,12 @@ class BaseMeasure(abc.ABC):
 
     def score_distance_function_max(self, data: np.ndarray, labels: np.ndarray, **kwargs) -> float:
         orig_score = self.score_distance_function(data, labels, **kwargs)
-        # orig_score = self.ensure_finite(orig_score)
         if self.less_is_better:
             return -orig_score
         return orig_score
 
     def score_distance_function_min(self, data: np.ndarray, labels: np.ndarray, **kwargs) -> float:
         orig_score = self.score_distance_function(data, labels, **kwargs)
-        # orig_score = self.ensure_finite(orig_score)
         if not self.less_is_better:
             return -orig_score
         return orig_score
-
