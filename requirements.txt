@@ -5,3 +5,5 @@ scikit-learn==1.6.1
 pandas==2.2.3
 ConfigSpace==1.2.1
 Optunity==1.1.1
+smac==2.3.0
+BOHB_HPO==0.5.2
