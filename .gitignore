@@ -176,3 +176,5 @@ cython_debug/
 *.xml
 .idea/
 evaluations/datasets/
+evaluations/Clustering-Datasets/
+output/
