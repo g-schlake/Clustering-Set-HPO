@@ -71,7 +71,7 @@ class InterestingnessScorerBOHB(InterestingnessScorer):
             raise ValueError
 
     def score(self, config, seed=0):
-        return super().score(**config)
+        return -1*super().score(**config)
 
     def run(self, desc=None):
         opt = BOHB(self.config, self.score, max_budget=int(self.time_budget / 2), min_budget=1, n_proc=1)
@@ -88,6 +88,6 @@ class InterestingnessScorerBOHB(InterestingnessScorer):
             params = self.process_hparams(**params)
             best_result = self.generate_clusterings(params)
             sim_mat, val_mat = self.evaluate_clusterings(best_result)
-            return [x[1] for x in best_result], res["loss"], sim_mat, val_mat, params
+            return [x[1] for x in best_result], -1*res["loss"], sim_mat, val_mat, params
         else:
             return [], -1, _, _, {}
