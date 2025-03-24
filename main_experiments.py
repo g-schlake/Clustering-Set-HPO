@@ -12,8 +12,11 @@ from interestingness_optimizer.interestingness_scorer_bohb import Interestingnes
 import os
 import time
 import platform
+from pathlib import Path
 
 if __name__ == '__main__':
+    output_dir = Path("./output/")
+    output_dir.mkdir(exist_ok=True)
 
     if platform.system() == "Linux":
         from interestingness_optimizer.interestingness_scorer_smac import InterestingnessScorerSMAC_AC, \
@@ -23,6 +26,7 @@ if __name__ == '__main__':
                    InterestingnessScorerBOHB, InterestingnessScorerOptunity]
     else:
         solvers = [InterestingnessScorerBOHB, InterestingnessScorerOptunity]
+
     validation_functions = get_measures()[:2]
     algs = [(x, 5) for x in get_algorithms()[:3]]
     dgs = fetch_datasets_real_syn()
@@ -34,8 +38,9 @@ if __name__ == '__main__':
         for ds in dss:
             data, labels = dss[ds]["data"], dss[ds]["labels"]
             for solver in solvers:
-                if os.path.exists(f"output/{ds}_{solver.__name__}.csv"):
-                    ds_res = pd.read_csv(f"output/{ds}_{solver.__name__}.csv", index_col=0)
+                filename = (output_dir / f"{ds}_{solver.__name__}.csv")
+                if filename.exists():
+                    ds_res = pd.read_csv(filename, index_col=0)
                     df_res = pd.concat([df_res, ds_res])
                     continue
                 ds_res = pd.DataFrame(
@@ -53,5 +58,5 @@ if __name__ == '__main__':
                                                          end - start]
                         ds_res.loc[len(ds_res.index)] = [ds, interest, scorer.name, method.name, score, str(results),
                                                          end - start]
-                ds_res.to_csv(f"output/{ds}_{solver.__name__}.csv")
+                ds_res.to_csv(filename)
         df_res.to_csv(f"interestingness_hpo_{dg}.csv")
