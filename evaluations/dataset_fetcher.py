@@ -349,7 +349,7 @@ def ensure_datasets():
             urllib.request.urlretrieve(
                 "https://archive.ics.uci.edu/static/public/139/synthetic+control+chart+time+series.zip", zip_path)
         with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-            zip_ref.extract("synthetic_control.data", os.path.join(base_directory,"datasets"))
+            zip_ref.extract("synthetic_control.data", os.path.join(base_directory, "datasets"))
     if not os.path.isdir(os.path.join(base_directory, "Clustering-Datasets")):
         subprocess.run(["git", "clone", "https://github.com/milaan9/Clustering-Datasets",
                         os.path.join(base_directory, "Clustering-Datasets")])

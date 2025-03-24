@@ -84,13 +84,7 @@ class InterestingnessScorerOptunity(InterestingnessScorer):
         for param in params:
             split = param.split("|")
             param_new = split[-1]
-            if self.method == generationMethod.BINARY and len(param_new.split("_")) == 2:
-                if params[param_new] > 1:
-                    params_new[param_new] = "True"
-                else:
-                    params_new[param_new] = "False"
-            else:
-                params_new[param_new] = params[param]
+            params_new[param_new] = params[param]
         params = self.process_hparams(**params_new)
         if len(params) == 0:
             return [], -np.inf, None, None, {}
