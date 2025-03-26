@@ -9,7 +9,20 @@ It should help to reproduce the results in
 > hopefully AutoML 2025
 
 If you use this repo for your work, please cite the aforementioned paper.
+
+## Setup
+
 The Repo was tested with Python 3.10 and Linux. On Windows, SMAC does not work and is not used.
+As of Mar. 2024, Python versions > 3.10 do not work as the required library `pyrfr` hasn't been ported  to current Python versions yet.
+
+On Linux, `$ bash setup_env.bash` creates a Python virtual environment in the repo and installs all necessary dependencies from the `requirements.txt`.
+A complete setup and reproduction of all experiments should work like this:
+
+```bash
+bash setup_env.bash
+source .venv/bin/activate
+python main_experiments.py
+```
 
 ##  Datasets
 
