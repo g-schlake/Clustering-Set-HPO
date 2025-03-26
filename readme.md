@@ -24,6 +24,8 @@ source .venv/bin/activate
 python main_experiments.py
 ```
 
+Note that a complete reproduction of all experiments may take a very long time. On a `AMD Ryzen Threadripper 265 3970X` with 32 cores, a full run takes about 7 days.
+
 ##  Datasets
 
 The `dataset_fetcher` in the `auxiliaries` folder retrieves  the 
