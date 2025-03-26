@@ -16,7 +16,7 @@ The Repo was tested with Python 3.10 and Linux. On Windows, SMAC does not work a
 As of Mar. 2024, Python versions > 3.10 do not work as the required library `pyrfr` hasn't been ported  to current Python versions yet.
 
 On Linux, `$ bash setup_env.bash` creates a Python virtual environment in the repo and installs all necessary dependencies from the `requirements.txt`.
-A complete setup and reproduction of all experiments should work like this:
+A complete setup and reproduction of all experimental data should work like this:
 
 ```bash
 bash setup_env.bash
@@ -46,7 +46,5 @@ datasets  by inserting a line like ``if ds != "iris": continue`` as line 38 in `
 
 ## Reported results
 All results used for our paper can be found under `reported_results/interestingness_hpo.csv`. 
-
-## Graphic reproducability
-The graphics and table of the `Result` part of our paper can mostly be reproduced using 
-the notebook `graphics_reproducability`.
+Table 2, as well as the data for Figure 2, can be generated using the jupyter notebook `graphics_reproducability`.
+All other figures and tables in the paper do not depent on experimental data.
