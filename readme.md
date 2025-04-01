@@ -4,9 +4,9 @@ It should help to reproduce the results in
 
 > Anyonymous Authors
 > 
-> "Search Spaces for Hyperparameter Optimization of Interesting Clustering Sets" 
+> "Multi Algorithm Selection for Hyperparameter Optimization of Interesting Clustering Sets" 
 > 
-> hopefully AutoML 2025
+> AutoML 2025 (in Review)
 
 If you use this repo for your work, please cite the aforementioned paper.
 
