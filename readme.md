@@ -4,7 +4,7 @@ It should help to reproduce the results in
 
 > Anyonymous Authors
 > 
-> "Multi Algorithm Selection for Hyperparameter Optimization of Interesting Clustering Sets" 
+> "Multi Algorithm Selection and Hyperparameter Optimization for Automated Clustering" 
 > 
 > AutoML 2025 (in Review)
 
