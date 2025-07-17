@@ -6,7 +6,7 @@ It should help to reproduce the results in
 > 
 > "Multi Algorithm Selection and Hyperparameter Optimization for Automated Clustering" 
 > 
-> AutoML 2025 (in Review)
+> DSAA 2025 (in Review)
 
 If you use this repo for your work, please cite the aforementioned paper.
 
