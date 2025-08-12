@@ -2,11 +2,11 @@
 This GitHub Repository contains the experiments to explore different search spaces for Automated Exploratory Clustering. 
 It should help to reproduce the results in 
 
-> Anyonymous Authors
+> Georg Stefan Schlake, Max Pernklau, Christian Beecks
 > 
 > "Multi Algorithm Selection and Hyperparameter Optimization for Automated Clustering" 
 > 
-> DSAA 2025 (in Review)
+> DSAA 2025 
 
 If you use this repo for your work, please cite the aforementioned paper.
 
